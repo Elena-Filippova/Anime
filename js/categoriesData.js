@@ -1,4 +1,4 @@
-const mainData = () => {
+const categoriesData = () => {
   const preloader = document.querySelector('.preloder')
 
   const renderGenreList = (ganres) => {
@@ -12,12 +12,12 @@ const mainData = () => {
   }
 
   const renderAnimeList = (array, ganres) => {
-    const wrapper = document.querySelector('.product .col-lg-8')
+    const wrapper = document.querySelector('.product-page .col-lg-8')
     
     ganres.forEach((ganre) => {
       const productBlock = document.createElement('div')
       const listBlock = document.createElement('div')
-      const list = array.filter(item => item.ganre === ganre)
+      const list = array.filter(item => item.tags.includes(ganre))
 
       productBlock.classList.add('mb-5')
       listBlock.classList.add('row')
@@ -66,7 +66,7 @@ const mainData = () => {
       wrapper.append(productBlock)
 
       wrapper.querySelectorAll('.set-bg').forEach((elem) => {
-        elem.style.backgroundImage = `url('${elem.dataset.setbg}')` 
+        elem.style.backgroundImage = `url(${elem.dataset.setbg})` 
       })
     })
 
@@ -91,7 +91,7 @@ const mainData = () => {
     })
 
     wrapper.querySelectorAll('.set-bg').forEach((elem) => {
-      elem.style.backgroundImage = `url(${elem.dataset.setbg})` 
+      elem.style.backgroundImage = `url('${elem.dataset.setbg}')` 
     })
   }
 
@@ -100,15 +100,22 @@ const mainData = () => {
     .then(data => {
       const animeData = Array.isArray(data) ? data : []
       const ganres = new Set()
+      const ganreParams = new URLSearchParams(window.location.search).get('ganre')
 
       animeData.forEach(item => {
           ganres.add(item.ganre)
       })
 
       renderTopAnime(animeData.sort((a, b) => b.views - a.views).slice(0, 5))
-      renderAnimeList(animeData, ganres)
+
+      if (ganreParams) {
+        renderAnimeList(animeData, [ganreParams])
+      } else {
+        renderAnimeList(animeData, ganres)
+      }
+
       renderGenreList(ganres)
-    })
+  })
 }
 
-mainData()
+categoriesData()
